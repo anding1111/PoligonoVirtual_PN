@@ -16,6 +16,8 @@ namespace PoligonoVirtual.Weapon
         [Header("Calibración")]
         // Offset manual (desde inspector)
         public Quaternion baseOffset = Quaternion.identity;
+        // Estado anterior del gatillo
+        private bool _lastTriggerState = false;
         // Offset dinámico (Zeroing) calculado en runtime
         private Quaternion _calibrationDelta = Quaternion.identity;
 
