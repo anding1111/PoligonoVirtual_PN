@@ -77,6 +77,8 @@ namespace PoligonoVirtual.Weapon
             // Validar referencias
             if (projectilePrefab != null && muzzlePoint != null)
             {
+                // Instanciar proyectil con la rotación del muzzlePoint
+                // (El script Projectile.cs aplicará la velocidad en Start usando transform.forward)
                 Instantiate(projectilePrefab, muzzlePoint.position, muzzlePoint.rotation);
             }
             else
@@ -114,15 +116,30 @@ namespace PoligonoVirtual.Weapon
 
         private void HandleEditorInput()
         {
-            // Disparo
-            if (Input.GetKeyDown(KeyCode.Space)) Fire();
+            // 1. Simulación de Disparo
+            if (Input.GetKeyDown(KeyCode.Space))
+            {
+                Fire();
+            }
 
-            // Calibración
-            if (Input.GetKeyDown(KeyCode.C)) CalibrateBoresight();
+            // 2. Simulación de Calibración
+            if (Input.GetKeyDown(KeyCode.C))
+            {
+                CalibrateBoresight();
+            }
 
-            // Simulación Rotación (si no hay datos UDP entrando, esto podría pelearse con ProcessSensorData
-            // pero útil si UDP está desconectado o para testing rápido).
-            // NOTA: Si UDP está activo, sobreescribirá esto en el siguiente frame.
+            // --- ASEGÚRATE QUE ESTO ESTÉ AQUÍ ---
+            // 3. Simulación de Rotación con Flechas
+            float rotationSpeed = 100f * Time.deltaTime;
+            Vector3 currentEuler = transform.localEulerAngles;
+
+            if (Input.GetKey(KeyCode.LeftArrow)) currentEuler.y -= rotationSpeed;
+            if (Input.GetKey(KeyCode.RightArrow)) currentEuler.y += rotationSpeed;
+            if (Input.GetKey(KeyCode.UpArrow)) currentEuler.x -= rotationSpeed;
+            if (Input.GetKey(KeyCode.DownArrow)) currentEuler.x += rotationSpeed;
+
+            transform.localRotation = Quaternion.Euler(currentEuler);
+            // ------------------------------------
         }
     }
 }
